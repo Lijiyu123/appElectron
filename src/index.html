@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <script src="jquery-1.11.0.js"  type="text/javascript"></script>
+    <script>if (typeof module === 'object') {window.jQuery = window.$ = module.exports;};</script>
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+    <button>点击</button>
+    <section style="-webkit-app-region: no-drag">
+      <button type="button" id="maxbt">max</button>
+      <button type="button" id="minbt">>min</button>
+      <button type="button" id="closebt">>close</button>
+      <button id="newsChat">消息通知</button>
+      <button id="new-window">新的窗口</button>
+  </section>
+  </body>
+</html>
+<script>
+  $(function(){
+    var ipc = require('electron').ipcRenderer;
+    $("#maxbt").click (() =>{
+      ipc.send('window-max');
+    })
+    $('#minbt').click (() =>{
+      ipc.send('window-min');
+    })
+    $('#closebt').click (() =>{
+      ipc.send('window-close');
+    })
+
+    //myNotification消息通知
+    $('#newsChat').click (() =>{
+      let myNotification = new Notification('标题', {
+        body: '通知正文内容',
+        silentBoolean:true,// (可选) 在显示通知时是否发出 OS 提示音
+        icon :'',
+      })
+      ipc.send('news-new');//消息闪烁，传递给主进程
+      myNotification.onclick = ()=> {
+        console.log('通知被点击')
+      }
+    })
+
+
+    
+   
+  })
+ //创建子窗口 带传参
+    const BrowserWindow = require('electron').remote.BrowserWindow
+    const path = require('path')
+    const newWindowBtn = document.getElementById('new-window')
+    let flag1 = false//此处用const报错 不知道为啥
+    newWindowBtn.addEventListener('click', function (event) {
+      if(flag1){
+        return;
+      }
+     const modalPath = path.join('file://', __dirname, 'newpage/modal.html?index='+5)//url传参
+      let win = new BrowserWindow({ width: 1100, height: 600 })
+      win.on('close', function () { win = null })
+     win.loadURL(modalPath)
+      win.show()
+      flag1=true;
+    })  
+ 
+</script>
